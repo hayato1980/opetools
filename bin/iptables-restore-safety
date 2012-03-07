@@ -1,0 +1,29 @@
+#!/bin/bash
+
+OLD=$(mktemp /tmp/iptables-old-XXXXXX)
+NEW=$(mktemp /tmp/iptables-new-XXXXXX)
+
+cat - > $NEW
+
+echo "---old iptables setting" 
+/sbin/iptables-save | tee $OLD
+
+echo ""
+echo "---new iptables setting"
+cat $NEW
+
+echo ""
+echo "---diff iptables"
+diff -u $OLD $NEW
+
+/sbin/iptables-restore < $NEW
+
+echo "-------"
+echo "Press Ctrl+C if you really want to set this rule."
+echo "-------"
+sleep 60
+
+/sbin/iptables-restore < $OLD
+
+echo "backout iptables setting"
+
